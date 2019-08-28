@@ -16,11 +16,6 @@ class Todos(Resource):
         return {
             todo_id: todos[todo_id]
         }
-    
-    def put(self, todo_id):
-        return request.form 
-
-
 
 # Create routes
 api.add_resource(Todos, '/<string:todo_id>')
