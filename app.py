@@ -1,4 +1,4 @@
-from bs4 import bs4.BeautifulSoup  
+from bs4 import BeautifulSoup  
 import urllib.request  
 import re
 import heapq  
