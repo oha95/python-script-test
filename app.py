@@ -4,6 +4,7 @@ import nltk
 import re
 from nltk.tokenize import sent_tokenize
 from nltk.corpus import stopwords
+nltk.download('stopwords')
 stop_words = stopwords.words('english')
 from sklearn.metrics.pairwise import cosine_similarity
 import networkx as nx
