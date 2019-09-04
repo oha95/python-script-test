@@ -1,4 +1,5 @@
-from bs4 import BeautifulSoup  
+import bs4 as bs 
+import lxml
 import urllib.request  
 import re
 import heapq  
@@ -15,7 +16,7 @@ uri='https://fr.wikipedia.org/wiki/Napol%C3%A9on_Ier'
 # Retrieving text from Html paragraphs
 scraped_data = urllib.request.urlopen(uri)  
 article = scraped_data.read()
-parsed_article = BeautifulSoup(article,'html5lib')
+parsed_article = bs.BeautifulSoup(article,'lxml')
 paragraphs = parsed_article.find_all('p')
 
 def summarize(article_text, val):
