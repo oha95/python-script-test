@@ -1,73 +1,26 @@
-import bs4 as bs  
-import urllib.request  
-import re
-import heapq  
-import lxml
+from flask import Flask, request
+from flask_restful import Resource, Api
 
-import nltk
-from nltk.tokenize import sent_tokenize
-from nltk.corpus import stopwords
-nltk.download('punkt')
-nltk.download('stopwords')
+# Instantiate the app
+app = Flask(__name__)
+api = Api(app)
 
-# Dataset
-uri='https://fr.wikipedia.org/wiki/Napol%C3%A9on_Ier'
+todos = {'t1': 'todo1', 't2': 'todo2'}
 
-# Retrieving text from Html paragraphs
-scraped_data = urllib.request.urlopen(uri)  
-article = scraped_data.read()
-parsed_article = bs.BeautifulSoup(article,'lxml')
-paragraphs = parsed_article.find_all('p')
+class Todos(Resource):
+    def get(self, todo_id):
+        return {
+            todo_id: todos[todo_id]
+        }
 
-def summarize(article_text, val):
-  summary_sentences = []
-    
-  # Removing Square Brackets and Extra Spaces
-  article_text = re.sub(r'\[[0-9]*\]', ' ', article_text)  
-  article_text = re.sub(r'\s+', ' ', article_text)  
+    def put(self, todo_id):
+        return request.form 
 
-  # Removing special characters and digits
-  formatted_article_text = re.sub('[^a-zA-Z]', ' ', article_text )  
-  formatted_article_text = re.sub(r'\s+', ' ', formatted_article_text)  
 
-  if not len(formatted_article_text) <= 1: 
 
-    # Tokenizing content
-    sentence_list = nltk.sent_tokenize(article_text)  
-    stopwords = nltk.corpus.stopwords.words('french')
+# Create routes
+api.add_resource(Todos, '/<string:todo_id>')
 
-    word_frequencies = {}  
-    for word in nltk.word_tokenize(formatted_article_text):  
-        if word not in stopwords:
-            if word not in word_frequencies.keys():
-                word_frequencies[word] = 1
-            else:
-                word_frequencies[word] += 1
-
-    maximum_frequncy = max(word_frequencies.values())
-
-    for word in word_frequencies.keys():  
-        word_frequencies[word] = (word_frequencies[word]/maximum_frequncy)
-
-    sentence_scores = {}  
-    for sent in sentence_list:  
-        for word in nltk.word_tokenize(sent.lower()):
-            if word in word_frequencies.keys():
-                if len(sent.split(' ')) < 30:
-                    if sent not in sentence_scores.keys():
-                        sentence_scores[sent] = word_frequencies[word]
-                    else:
-                        sentence_scores[sent] += word_frequencies[word]
-
-    summary_sentences = heapq.nlargest(val, sentence_scores, key=sentence_scores.get)
-  return summary_sentences
-
-# 1st Loop to summarize paragraphs
-tmp = []
-for p in paragraphs:  
-  s = summarize(p.text, 1)
-  tmp = tmp + s
-
-# 2nd Loop to select sentences
-summary = ""
-print('\n'.join(summarize('\n'.join(tmp), 15)))
+# Run the application
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
